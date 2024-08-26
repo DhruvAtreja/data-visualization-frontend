@@ -10,11 +10,17 @@ const UploadButton: React.FC<UploadButtonProps> = ({ onFileUpload }) => {
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
-    if (file && file.name.endsWith('.sqlite')) {
-      setFileName(file.name)
-      onFileUpload(file)
-    } else {
-      alert('Please select a valid .sqlite file')
+    if (file) {
+      if (file.size > 1024 * 1024) {
+        alert('File size should be less than 1 MB')
+        return
+      }
+      if (file.name.endsWith('.sqlite')) {
+        setFileName(file.name)
+        onFileUpload(file)
+      } else {
+        alert('Please select a valid .sqlite file')
+      }
     }
   }
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import Form from './Form'
 import Logo from '../Logo'
 import { Client } from '@langchain/langgraph-sdk'
@@ -37,31 +37,7 @@ export default function Playground() {
   const [databaseUuid, setDatabaseUuid] = useState<string | null>(null)
   const [databaseFileName, setDatabaseFileName] = useState<string | null>(null)
 
-  const run = async (question: string) => {
-    if (!databaseUuid) {
-      await uploadDefaultDatabase()
-    }
-
-    const client = new Client({
-      apiKey: process.env.NEXT_PUBLIC_LANGSMITH_API_KEY,
-      apiUrl: process.env.NEXT_PUBLIC_LANGSMITH_API_URL,
-    })
-
-    const thread = await client.threads.create()
-
-    const streamResponse = client.runs.stream(thread['thread_id'], 'my_agent', {
-      input: { question, databaseUuid },
-    })
-
-    for await (const chunk of streamResponse) {
-      if (chunk.data && chunk.data.question) {
-        setGraphState(chunk.data)
-        console.log(chunk.data)
-      }
-    }
-  }
-
-  const uploadDatabase = async (file: File): Promise<string> => {
+  const uploadDatabase = useCallback(async (file: File): Promise<string> => {
     const formData = new FormData()
     formData.append('sqliteFile', file)
 
@@ -81,34 +57,69 @@ export default function Playground() {
       console.error('Error uploading file:', error)
       throw error
     }
-  }
+  }, [])
 
-  const uploadDefaultDatabase = async () => {
+  const uploadDefaultDatabase = useCallback(async () => {
     try {
       const response = await fetch('/data.sqlite')
       const blob = await response.blob()
       const file = new File([blob], 'data.sqlite', { type: 'application/x-sqlite3' })
       const uuid = await uploadDatabase(file)
       setDatabaseUuid(uuid)
+      console.log('uuid', uuid)
       setDatabaseFileName('data.sqlite')
       console.log(`Default database "data.sqlite" uploaded successfully. UUID: ${uuid}`)
+      return uuid
     } catch (error) {
       console.error('Failed to upload default database:', error)
       alert('Failed to upload default database')
     }
-  }
+  }, [uploadDatabase, setDatabaseUuid, setDatabaseFileName])
 
-  const handleFileUpload = async (file: File) => {
-    try {
-      const uuid = await uploadDatabase(file)
-      setDatabaseUuid(uuid)
-      setDatabaseFileName(file.name)
-      console.log(`File "${file.name}" uploaded successfully. UUID: ${uuid}`)
-    } catch (error) {
-      console.error('Failed to upload file:', error)
-      alert('Failed to upload file')
-    }
-  }
+  const run = useCallback(
+    async (question: string) => {
+      let defaultDatabaseUuid = null
+      if (!databaseUuid) {
+        defaultDatabaseUuid = await uploadDefaultDatabase()
+      }
+
+      const client = new Client({
+        apiKey: process.env.NEXT_PUBLIC_LANGCHAIN_API_KEY,
+        apiUrl: process.env.NEXT_PUBLIC_LANGCHAIN_BASE_URL,
+      })
+
+      const thread = await client.threads.create()
+
+      console.log('thread', databaseUuid)
+
+      const streamResponse = client.runs.stream(thread['thread_id'], 'my_agent', {
+        input: { question, uuid: databaseUuid || defaultDatabaseUuid },
+      })
+
+      for await (const chunk of streamResponse) {
+        if (chunk.data && chunk.data.question) {
+          setGraphState(chunk.data)
+          console.log(chunk.data)
+        }
+      }
+    },
+    [databaseUuid, uploadDefaultDatabase],
+  )
+
+  const handleFileUpload = useCallback(
+    async (file: File) => {
+      try {
+        const uuid = await uploadDatabase(file)
+        setDatabaseUuid(uuid)
+        setDatabaseFileName(file.name)
+        console.log(`File "${file.name}" uploaded successfully. UUID: ${uuid}`)
+      } catch (error) {
+        console.error('Failed to upload file:', error)
+        alert('Failed to upload file')
+      }
+    },
+    [uploadDatabase, setDatabaseUuid, setDatabaseFileName],
+  )
 
   useEffect(() => {
     const rotateInterval = setInterval(() => {
