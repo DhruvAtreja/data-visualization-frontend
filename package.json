@@ -12,7 +12,7 @@
     "test:coverage": "yarpm run test --coverage",
     "test:debug": "yarpm run test --debug --detectOpenHandles",
     "test:ci": "yarpm run test --runInBand --no-cache --ci",
-    "test": "NODE_ENV=test jest",
+    "test": "NODE_ENV=test jest --passWithNoTests",
     "typecheck": "tsc --noEmit",
     "clean": "rimraf out/",
     "prepare": "is-ci || husky install",
