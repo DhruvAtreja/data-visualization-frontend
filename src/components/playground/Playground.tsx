@@ -5,6 +5,7 @@ import { Client } from '@langchain/langgraph-sdk'
 import { QuestionDisplay } from './QuestionDisplay'
 import { Stream } from './Stream'
 import { graphDictionary, InputType } from '../graphs/graphDictionary'
+import UploadButton from '../UploadButton'
 
 type GraphComponentProps = InputType & { data: any }
 
@@ -33,17 +34,23 @@ export default function Playground() {
   const [selectedQuestion, setSelectedQuestion] = useState('')
   const [displayedQuestions, setDisplayedQuestions] = useState<string[]>([])
   const [graphState, setGraphState] = useState<GraphState | null>(null)
+  const [databaseUuid, setDatabaseUuid] = useState<string | null>(null)
+  const [databaseFileName, setDatabaseFileName] = useState<string | null>(null)
 
   const run = async (question: string) => {
+    if (!databaseUuid) {
+      await uploadDefaultDatabase()
+    }
+
     const client = new Client({
       apiKey: process.env.NEXT_PUBLIC_LANGSMITH_API_KEY,
-      apiUrl: 'https://ht-candid-kettledrum-53-9f27eecbc4335921bd2bfa8a8e3ce0d2.default.us.langgraph.app',
+      apiUrl: process.env.NEXT_PUBLIC_LANGSMITH_API_URL,
     })
 
     const thread = await client.threads.create()
 
     const streamResponse = client.runs.stream(thread['thread_id'], 'my_agent', {
-      input: { question },
+      input: { question, databaseUuid },
     })
 
     for await (const chunk of streamResponse) {
@@ -51,6 +58,55 @@ export default function Playground() {
         setGraphState(chunk.data)
         console.log(chunk.data)
       }
+    }
+  }
+
+  const uploadDatabase = async (file: File): Promise<string> => {
+    const formData = new FormData()
+    formData.append('sqliteFile', file)
+
+    try {
+      const response = await fetch(process.env.NEXT_PUBLIC_SQLITE_URL + '/upload-sqlite', {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (!response.ok) {
+        throw new Error('Upload failed')
+      }
+
+      const data = await response.json()
+      return data.uuid
+    } catch (error) {
+      console.error('Error uploading file:', error)
+      throw error
+    }
+  }
+
+  const uploadDefaultDatabase = async () => {
+    try {
+      const response = await fetch('/data.sqlite')
+      const blob = await response.blob()
+      const file = new File([blob], 'data.sqlite', { type: 'application/x-sqlite3' })
+      const uuid = await uploadDatabase(file)
+      setDatabaseUuid(uuid)
+      setDatabaseFileName('data.sqlite')
+      console.log(`Default database "data.sqlite" uploaded successfully. UUID: ${uuid}`)
+    } catch (error) {
+      console.error('Failed to upload default database:', error)
+      alert('Failed to upload default database')
+    }
+  }
+
+  const handleFileUpload = async (file: File) => {
+    try {
+      const uuid = await uploadDatabase(file)
+      setDatabaseUuid(uuid)
+      setDatabaseFileName(file.name)
+      console.log(`File "${file.name}" uploaded successfully. UUID: ${uuid}`)
+    } catch (error) {
+      console.error('Failed to upload file:', error)
+      alert('Failed to upload file')
     }
   }
 
@@ -84,6 +140,7 @@ export default function Playground() {
   return (
     <div className='flex flex-col items-center justify-center min-h-screen bg-[#204544] m-0 p-0'>
       <Logo />
+      <UploadButton onFileUpload={handleFileUpload} />
 
       <Form selectedQuestion={selectedQuestion} setSelectedQuestion={setSelectedQuestion} onFormSubmit={onFormSubmit} />
       {!graphState && (
