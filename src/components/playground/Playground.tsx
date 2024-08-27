@@ -15,7 +15,7 @@ const sampleQuestions = [
   'Avg unit price in sports vs food',
   'What is the market share of products?',
   'Spending across categories and gender',
-  'Will I get into YC?',
+  'Be honest, will I get into YC?',
 ]
 export type GraphState = {
   question: string
@@ -160,11 +160,11 @@ export default function Playground() {
 
   const handleQuestionClick = (question: string) => {
     setSelectedQuestion(question)
+    run(question)
   }
 
   const onFormSubmit = () => {
     run(selectedQuestion)
-    setSelectedQuestion('')
   }
 
   const toggleSidebar = () => {
@@ -173,17 +173,52 @@ export default function Playground() {
 
   return (
     <div className='flex flex-col items-center justify-center min-h-screen bg-[#204544] m-0 p-0'>
-      <Logo />
+      <Logo setGraphState={setGraphState} />
       <UploadButton onFileUpload={handleFileUpload} />
 
       <Form selectedQuestion={selectedQuestion} setSelectedQuestion={setSelectedQuestion} onFormSubmit={onFormSubmit} />
+
       {!graphState && (
-        <QuestionDisplay displayedQuestions={displayedQuestions} handleQuestionClick={handleQuestionClick} />
+        <>
+          <div className='text-white text-center mb-20 w-2/3'>
+            Don't have a .sqlite or .csv file to query? We'll use this one by default:{' '}
+            <a
+              href='https://docs.google.com/spreadsheets/d/1S2mYAKwYYmjZW6jURiAfMWTVmwg74QQDfwdMUvVEgMk/edit?usp=sharing'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='text-blue-300 hover:text-blue-100'
+            >
+              Sample Dataset
+            </a>
+          </div>
+          <QuestionDisplay displayedQuestions={displayedQuestions} handleQuestionClick={handleQuestionClick} />
+        </>
       )}
 
-      {graphState && !graphState.formatted_data_for_visualization && (
+      {graphState && !(graphState.formatted_data_for_visualization || graphState.visualization == 'none') && (
         <div className='flex  w-2/3 items-start  items-center justify-center mt-60'>
           <Stream graphState={graphState} />
+        </div>
+      )}
+      {graphState && graphState.visualization == 'none' && (
+        <div id='answer_canvas' className='p-10 w-2/3 flex flex-col items-center justify-center relative'>
+          <button
+            onClick={toggleSidebar}
+            className='absolute top-12 right-12 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'
+          >
+            See Traces
+          </button>
+          <div className='flex w-full flex-col p-10 rounded-[10px] bg-white items-center justify-center'>
+            <div className='text-lg mx-20'>{graphState.answer}</div>
+            {graphState.visualization_reason && (
+              <div className='text-sm mt-10 text-gray-500 mx-20'>{graphState.visualization_reason}</div>
+            )}
+          </div>
+          {showSidebar && (
+            <div ref={sidebarRef}>
+              <Sidebar graphState={graphState} onClose={toggleSidebar} />
+            </div>
+          )}
         </div>
       )}
 
@@ -193,7 +228,7 @@ export default function Playground() {
             onClick={toggleSidebar}
             className='absolute top-12 right-12 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'
           >
-            Stream
+            See Traces
           </button>
           <div className='flex w-full flex-col p-10 rounded-[10px] bg-white items-center justify-center'>
             <div className='text-sm mb-10 mx-20'>

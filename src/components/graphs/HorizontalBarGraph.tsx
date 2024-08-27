@@ -15,6 +15,7 @@ export const exampleData: HorizontalBarGraphProps = {
     values: [{ data: [21.5, 25.0, 47.5, 64.8, 105.5, 133.2], label: '' }],
   },
 }
+
 const HorizontalBarGraph: React.FC<HorizontalBarGraphProps> = ({ data }) => {
   return (
     <BarChart
@@ -23,6 +24,9 @@ const HorizontalBarGraph: React.FC<HorizontalBarGraphProps> = ({ data }) => {
       layout='horizontal'
       width={1000}
       height={300}
+      tooltip={{
+        trigger: 'item',
+      }}
     />
   )
 }

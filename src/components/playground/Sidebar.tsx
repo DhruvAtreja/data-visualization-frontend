@@ -16,7 +16,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ graphState, onClose }) => {
 
   const handleClose = () => {
     setIsOpen(false)
-    setTimeout(onClose, 300) // Delay closing to allow animation to complete
+    setTimeout(onClose, 300)
   }
 
   return (
@@ -25,9 +25,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ graphState, onClose }) => {
         isOpen ? 'translate-x-0' : 'translate-x-full'
       }`}
     >
-      <button onClick={handleClose} className='absolute top-4 right-4 text-white'>
-        ✕
-      </button>
+      <div className='flex justify-between items-center mt-2 px-4'>
+        <h2 className='text-white text-xl font-semibold'>Traces</h2>
+        <button onClick={handleClose} className='text-white'>
+          Hide
+        </button>
+      </div>
+
       <div className='p-4'>
         <Stream graphState={graphState} />
       </div>
