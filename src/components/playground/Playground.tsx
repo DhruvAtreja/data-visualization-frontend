@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import Form from './Form'
 import Logo from '../Logo'
 import { Client } from '@langchain/langgraph-sdk'
@@ -6,6 +6,7 @@ import { QuestionDisplay } from './QuestionDisplay'
 import { Stream } from './Stream'
 import { graphDictionary, InputType } from '../graphs/graphDictionary'
 import UploadButton from '../UploadButton'
+import { Sidebar } from './Sidebar'
 
 type GraphComponentProps = InputType & { data: any }
 
@@ -16,17 +17,20 @@ const sampleQuestions = [
   'Spending across categories and gender',
   'Will I get into YC?',
 ]
-
 export type GraphState = {
   question: string
-  parsed_question: string
+  uuid: string
+  parsed_question: { [key: string]: any }
+  unique_nouns: string[]
   sql_query: string
   sql_valid: boolean
+  sql_issues: string
   results: any[]
   answer: string
-  visualization: keyof typeof graphDictionary | '' | 'none'
+  error: string
+  visualization: string
   visualization_reason: string
-  formatted_data_for_visualization: any
+  formatted_data_for_visualization: { [key: string]: any }
 }
 
 export default function Playground() {
@@ -36,6 +40,8 @@ export default function Playground() {
   const [graphState, setGraphState] = useState<GraphState | null>(null)
   const [databaseUuid, setDatabaseUuid] = useState<string | null>(null)
   const [databaseFileName, setDatabaseFileName] = useState<string | null>(null)
+  const [showSidebar, setShowSidebar] = useState(false)
+  const sidebarRef = useRef<HTMLDivElement>(null)
 
   const uploadDatabase = useCallback(async (file: File): Promise<string> => {
     const formData = new FormData()
@@ -139,6 +145,19 @@ export default function Playground() {
     }
   }, [currentIndex])
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
+        setShowSidebar(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
+
   const handleQuestionClick = (question: string) => {
     setSelectedQuestion(question)
   }
@@ -146,6 +165,10 @@ export default function Playground() {
   const onFormSubmit = () => {
     run(selectedQuestion)
     setSelectedQuestion('')
+  }
+
+  const toggleSidebar = () => {
+    setShowSidebar(!showSidebar)
   }
 
   return (
@@ -159,15 +182,21 @@ export default function Playground() {
       )}
 
       {graphState && !graphState.formatted_data_for_visualization && (
-        <div className='flex  w-full items-start  items-center justify-center mt-60'>
+        <div className='flex  w-2/3 items-start  items-center justify-center mt-60'>
           <Stream graphState={graphState} />
         </div>
       )}
 
       {graphState && graphState.formatted_data_for_visualization && (
-        <div className='p-10  w-full flex flex-col  items-center justify-center'>
+        <div id='answer_canvas' className='p-10 w-full flex flex-col items-center justify-center relative'>
+          <button
+            onClick={toggleSidebar}
+            className='absolute top-12 right-12 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'
+          >
+            Stream
+          </button>
           <div className='flex w-full flex-col p-10 rounded-[10px] bg-white items-center justify-center'>
-            <div className=' text-sm mb-10 '>
+            <div className='text-sm mb-10 mx-20'>
               {graphState.answer && <div className='markdown-content'>{graphState.answer}</div>}
             </div>
             {React.createElement(
@@ -178,6 +207,11 @@ export default function Playground() {
               },
             )}
           </div>
+          {showSidebar && (
+            <div ref={sidebarRef}>
+              <Sidebar graphState={graphState} onClose={toggleSidebar} />
+            </div>
+          )}
         </div>
       )}
     </div>
