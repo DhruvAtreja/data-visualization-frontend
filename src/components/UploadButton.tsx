@@ -15,11 +15,11 @@ const UploadButton: React.FC<UploadButtonProps> = ({ onFileUpload }) => {
         alert('File size should be less than 1 MB')
         return
       }
-      if (file.name.endsWith('.sqlite')) {
+      if (file.name.endsWith('.sqlite') || file.name.endsWith('.csv')) {
         setFileName(file.name)
         onFileUpload(file)
       } else {
-        alert('Please select a valid .sqlite file')
+        alert('Please select a valid .sqlite or .csv file')
       }
     }
   }
@@ -30,7 +30,14 @@ const UploadButton: React.FC<UploadButtonProps> = ({ onFileUpload }) => {
 
   return (
     <div className='fixed top-4 right-4 z-50'>
-      <input type='file' ref={fileInputRef} onChange={handleFileChange} accept='.sqlite' className='hidden' />
+      <input
+        type='file'
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        name='file'
+        accept='.sqlite,.csv'
+        className='hidden'
+      />
       <button
         onClick={triggerFileInput}
         className='px-4 py-2 bg-white text-black rounded hover:bg-gray-200 transition-colors duration-300'

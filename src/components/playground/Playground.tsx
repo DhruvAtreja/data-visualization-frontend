@@ -45,10 +45,10 @@ export default function Playground() {
 
   const uploadDatabase = useCallback(async (file: File): Promise<string> => {
     const formData = new FormData()
-    formData.append('sqliteFile', file)
+    formData.append('file', file)
 
     try {
-      const response = await fetch(process.env.NEXT_PUBLIC_SQLITE_URL + '/upload-sqlite', {
+      const response = await fetch(process.env.NEXT_PUBLIC_SQLITE_URL + '/upload-file', {
         method: 'POST',
         body: formData,
       })
