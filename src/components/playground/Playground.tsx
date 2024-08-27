@@ -84,8 +84,8 @@ export default function Playground() {
       }
 
       const client = new Client({
-        apiKey: process.env.NEXT_PUBLIC_LANGCHAIN_API_KEY,
-        apiUrl: process.env.NEXT_PUBLIC_LANGCHAIN_BASE_URL,
+        apiKey: process.env.NEXT_PUBLIC_LANGSMITH_API_KEY,
+        apiUrl: process.env.NEXT_PUBLIC_LANGSMITH_API_URL,
       })
 
       const thread = await client.threads.create()
