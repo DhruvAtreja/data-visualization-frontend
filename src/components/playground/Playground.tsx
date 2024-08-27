@@ -65,30 +65,9 @@ export default function Playground() {
     }
   }, [])
 
-  const uploadDefaultDatabase = useCallback(async () => {
-    try {
-      const response = await fetch('/data.sqlite')
-      const blob = await response.blob()
-      const file = new File([blob], 'data.sqlite', { type: 'application/x-sqlite3' })
-      const uuid = await uploadDatabase(file)
-      setDatabaseUuid(uuid)
-      console.log('uuid', uuid)
-      setDatabaseFileName('data.sqlite')
-      console.log(`Default database "data.sqlite" uploaded successfully. UUID: ${uuid}`)
-      return uuid
-    } catch (error) {
-      console.error('Failed to upload default database:', error)
-      alert('Failed to upload default database')
-    }
-  }, [uploadDatabase, setDatabaseUuid, setDatabaseFileName])
-
   const run = useCallback(
     async (question: string) => {
-      let defaultDatabaseUuid = null
-      if (!databaseUuid) {
-        defaultDatabaseUuid = await uploadDefaultDatabase()
-      }
-
+      const defaultDatabaseUuid = '921c838c-541d-4361-8c96-70cb23abd9f5'
       const client = new Client({
         apiKey: process.env.NEXT_PUBLIC_LANGSMITH_API_KEY,
         apiUrl: process.env.NEXT_PUBLIC_LANGSMITH_API_URL,
@@ -109,7 +88,7 @@ export default function Playground() {
         }
       }
     },
-    [databaseUuid, uploadDefaultDatabase],
+    [databaseUuid],
   )
 
   const handleFileUpload = useCallback(
