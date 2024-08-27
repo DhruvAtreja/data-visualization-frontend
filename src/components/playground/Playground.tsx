@@ -139,12 +139,11 @@ export default function Playground() {
 
   const handleQuestionClick = (question: string) => {
     setSelectedQuestion(question)
-    run(question)
   }
 
-  const onFormSubmit = () => {
-    run(selectedQuestion)
-  }
+  const onFormSubmit = useCallback(async () => {
+    await run(selectedQuestion)
+  }, [run, selectedQuestion])
 
   const toggleSidebar = () => {
     setShowSidebar(!showSidebar)
