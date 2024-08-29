@@ -50,7 +50,7 @@ const UploadButton: React.FC<UploadButtonProps> = ({ onFileUpload, disabled }) =
           disabled ? 'opacity-50 cursor-not-allowed' : ''
         }`}
       >
-        {fileName ? (disabled ? `Uploading: ${fileName}` : `Uploaded: ${fileName}`) : 'Upload Database'}
+        {fileName ? (disabled ? `Uploading: ${fileName}` : `Uploaded: ${fileName}`) : 'Upload SQLite or CSV'}
       </button>
     </div>
   )
