@@ -11,7 +11,7 @@ import { Sidebar } from './Sidebar'
 type GraphComponentProps = InputType & { data: any }
 
 const sampleQuestions = [
-  'Relation b/w income and rating in men',
+  'Relation b/w income and rating in men and women',
   'Avg unit price in sports vs food',
   'What is the market share of products?',
   'Spending across categories and gender',
@@ -42,6 +42,7 @@ export default function Playground() {
   const [databaseFileName, setDatabaseFileName] = useState<string | null>(null)
   const [showSidebar, setShowSidebar] = useState(false)
   const sidebarRef = useRef<HTMLDivElement>(null)
+  const [isUploading, setIsUploading] = useState(false)
 
   const uploadDatabase = useCallback(async (file: File): Promise<string> => {
     const formData = new FormData()
@@ -93,6 +94,7 @@ export default function Playground() {
 
   const handleFileUpload = useCallback(
     async (file: File) => {
+      setIsUploading(true)
       try {
         const uuid = await uploadDatabase(file)
         setDatabaseUuid(uuid)
@@ -101,6 +103,8 @@ export default function Playground() {
       } catch (error) {
         console.error('Failed to upload file:', error)
         alert('Failed to upload file')
+      } finally {
+        setIsUploading(false)
       }
     },
     [uploadDatabase, setDatabaseUuid, setDatabaseFileName],
@@ -152,9 +156,14 @@ export default function Playground() {
   return (
     <div className='flex flex-col items-center justify-center min-h-screen bg-[#204544] m-0 p-0'>
       <Logo setGraphState={setGraphState} />
-      <UploadButton onFileUpload={handleFileUpload} />
+      <UploadButton onFileUpload={handleFileUpload} disabled={isUploading} />
 
-      <Form selectedQuestion={selectedQuestion} setSelectedQuestion={setSelectedQuestion} onFormSubmit={onFormSubmit} />
+      <Form
+        selectedQuestion={selectedQuestion}
+        setSelectedQuestion={setSelectedQuestion}
+        onFormSubmit={onFormSubmit}
+        disabled={isUploading}
+      />
 
       {!graphState && (
         <>
