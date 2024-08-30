@@ -1,50 +1,54 @@
-# tailwind-react-next.js-typescript-eslint-jest-starter
+# SQL Query Visualization Project
 
-Starter template for building a project using React, Typescript, Next.js, Jest, TailwindCSS and ESLint.
+This project is a web application that allows users to upload SQLite or CSV files, query the data using natural language, and visualize the results. It's built with Next.js and uses LangChain for natural language processing.
 
-## Setup Instructions
+## Features
 
-1. Clone or download the project.
-2. `cd` in the project directory.
-3. If you cloned the project, make sure you remove the remote reference to this project by running `git remote rm origin`.
-4. Copy `.env.example` to `.env` as that file is used to load up all your environment variables.
-4. Run `yarn install` or `npm install` to install all dependencies.
+- File upload support for SQLite and CSV files
+- Natural language querying of uploaded data (Text to SQL)
+- LangGraph cloud API
+- Automatic visualization of query results
+- Sample dataset available for demo purposes
+- Trace viewing for query execution
 
-## Commands
+## Getting Started
 
-- `yarn dev`: To start a local development server.
-- `yarn test`: To run the entire unit test suite using `jest`.
-- `yarn test:ci`: To run tests on CI.
-- `yarn lint`: To run the ESLint based linter to find out the issues in the project.
-- `yarn lint:fix`: To autoformat all the issues.
-- `yarn export`: Run this after running `yarn analyze` to export a build copy.
-- `yarn production`: To export a production build. Use `yarn start` to serve that.
+### Installation
 
-- `yarn upgrade --latest`: To upgrade all packages to their latest versions (could include breaking changes).
+1. Clone the repository
 
-## Code Structure
+2. Install dependencies:
 
-All source code is located in the `src/` directory.
+   ```
+   yarn install
+   ```
 
-1. All Next.js entrypoints are housed in the `src/pages` directory as a default.
+3. Set up environment variables:
+   - Copy `.env.example` to `.env`
+   - Fill in the required values:
+     ```
+     NEXT_PUBLIC_LANGSMITH_API_KEY=your_langsmith_api_key
+     NEXT_PUBLIC_SQLITE_URL=https://sqllite-server.onrender.com (a custom server I made to host the sqlite and csv databases)
+     NEXT_PUBLIC_LANGSMITH_API_URL=your_langsmith_api_url
+     ```
 
-    - Currently has `_app.tsx` which imports TailwindCSS.
-    - There's also a sample `index.tsx`.
+### Running the Application
 
-    **NOTE:** Feel free to move `pages` outside of `src/` if that's what you prefer. You'll just need to restart your local development server and everything should continue working as normal.
+1. Start the development server:
 
-2. `src/components` are all stateless reusable components.
-3. `src/css` folder is there just to house any CSS.
+   ```
+   yarn dev
+   ```
 
-    - Currently contains the TailwindCSS initialization CSS file.
+2. Open your browser and navigate to `http://localhost:3000`
 
-4. All env variables are available in `.env` files (`.env` file isn't committed). Whenever you update `.env`, please update `.env.example` and `.env.test` and `next.config.js` to proxy all environment variables properly.
+## Usage
 
-    - You can access these variables in the app source code anywhere using `process.env.<VAR_NAME>`.
+1. Upload a SQLite or CSV file, or use the provided sample dataset.
+2. Enter a natural language query in the input field.
+3. View the results, which will be automatically visualized if applicable.
+4. Click "See Traces" to view the query execution process.
 
-If you feel like changing the directory structure, please change the appropriate settings in the following files:
+## Contributing
 
-- `jest.config.js`
-- `postcss.config.js`
-- `tsconfig.json`
-- The `lint` and the `lint:fix` scripts in `package.json`
+Contributions are welcome! Please feel free to submit a Pull Request.
