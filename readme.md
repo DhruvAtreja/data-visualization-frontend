@@ -7,7 +7,7 @@ This repository was created to provider a server to manage and query .sqlite and
 - [LangGraph Cloud Backend](https://github.com/DhruvAtreja/DataVisualization)
 - [Server to handle .sqlite and .csv files](https://github.com/DhruvAtreja/DataVisualization)
 
-The project is deployed on [here](https://data-visualization-frontend-gamma.vercel.app/).
+The project is deployed [here](https://data-visualization-frontend-gamma.vercel.app/).
 
 ## Features
 
