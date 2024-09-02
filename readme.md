@@ -34,9 +34,9 @@ The project is deployed [here](https://data-visualization-frontend-gamma.vercel.
    - Copy `.env.example` to `.env`
    - Fill in the required values:
      ```
-     NEXT_PUBLIC_LANGSMITH_API_KEY=your_langsmith_api_key
+     LANGSMITH_API_KEY=your_langsmith_api_key
      NEXT_PUBLIC_SQLITE_URL=https://sqllite-server.onrender.com (a custom server I made to host the sqlite and csv databases)
-     NEXT_PUBLIC_LANGSMITH_API_URL=your_langsmith_api_url
+     LANGSMITH_API_URL=your_langsmith_api_url
      ```
 
 ### Running the Application
