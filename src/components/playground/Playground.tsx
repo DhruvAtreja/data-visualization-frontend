@@ -68,24 +68,33 @@ export default function Playground() {
 
   const run = useCallback(
     async (question: string) => {
-      const defaultDatabaseUuid = '921c838c-541d-4361-8c96-70cb23abd9f5'
-      const client = new Client({
-        apiKey: process.env.NEXT_PUBLIC_LANGSMITH_API_KEY,
-        apiUrl: process.env.NEXT_PUBLIC_LANGSMITH_API_URL,
+      const response = await fetch('/api/run', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ question, databaseUuid }),
       })
 
-      const thread = await client.threads.create()
+      if (!response.ok) {
+        throw new Error('Run failed')
+      }
 
-      console.log('thread', databaseUuid)
+      const reader = response.body?.getReader()
+      if (!reader) return
 
-      const streamResponse = client.runs.stream(thread['thread_id'], 'my_agent', {
-        input: { question, uuid: databaseUuid || defaultDatabaseUuid },
-      })
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
 
-      for await (const chunk of streamResponse) {
-        if (chunk.data && chunk.data.question) {
-          setGraphState(chunk.data)
-          console.log(chunk.data)
+        const chunk = new TextDecoder().decode(value)
+        const lines = chunk.split('\n\n')
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = JSON.parse(line.slice(6))
+            setGraphState(data)
+            console.log(data)
+          }
         }
       }
     },
