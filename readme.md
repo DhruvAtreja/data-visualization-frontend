@@ -2,6 +2,13 @@
 
 This project is a web application that allows users to upload SQLite or CSV files, query the data using natural language, and visualize the results. It's built with Next.js and uses LangChain for natural language processing.
 
+This repository was created to provider a server to manage and query .sqlite and .csv files for the Database Visualization project sponsored by Langchain. Here are the repositories for the project:
+
+- [LangGraph Cloud Backend](https://github.com/DhruvAtreja/DataVisualization)
+- [Server to handle .sqlite and .csv files](https://github.com/DhruvAtreja/DataVisualization)
+
+The project is deployed on [here](https://data-visualization-frontend-gamma.vercel.app/).
+
 ## Features
 
 - File upload support for SQLite and CSV files
