@@ -9,6 +9,8 @@ This repository was created to provider a server to manage and query .sqlite and
 
 The project is deployed [here](https://data-visualization-frontend-gamma.vercel.app/).
 
+[Video Demo](demo.mov)
+
 ## Features
 
 - File upload support for SQLite and CSV files
