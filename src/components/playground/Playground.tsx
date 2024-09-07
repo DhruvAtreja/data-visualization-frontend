@@ -15,7 +15,7 @@ const sampleQuestions = [
   'Avg unit price in sports vs food',
   'What is the market share of products?',
   'Spending across categories and gender',
-  'Be honest, will I get into YC?',
+  'Best performing cities over time?',
 ]
 export type GraphState = {
   question: string
