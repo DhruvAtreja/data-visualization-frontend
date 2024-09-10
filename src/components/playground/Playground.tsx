@@ -77,6 +77,7 @@ export default function Playground() {
       })
 
       if (!response.ok) {
+        console.log(response)
         throw new Error('Run failed')
       }
 

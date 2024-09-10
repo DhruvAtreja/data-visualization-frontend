@@ -38,7 +38,7 @@ The project is deployed [here](https://data-visualization-frontend-gamma.vercel.
      ```
      LANGSMITH_API_KEY=your_langsmith_api_key
      NEXT_PUBLIC_SQLITE_URL=https://sqllite-server.onrender.com (a custom server I made to host the sqlite and csv databases)
-     LANGSMITH_API_URL=your_langsmith_api_url
+     LANGGRAPH_API_URL=your_LANGGRAPH_API_URL
      ```
 
 ### Running the Application

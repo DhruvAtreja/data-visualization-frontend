@@ -18,6 +18,7 @@ export const exampleData: PieChartProps = {
 }
 
 const PieChartComponent: React.FC<PieChartProps> = ({ data }) => {
+  console.log(data)
   return (
     <PieChart
       series={[

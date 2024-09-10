@@ -10,7 +10,7 @@ export default async function handler(req: any, res: any) {
 
   const client = new Client({
     apiKey: process.env.LANGSMITH_API_KEY,
-    apiUrl: process.env.LANGSMITH_API_URL,
+    apiUrl: process.env.LANGGRAPH_API_URL,
   })
 
   try {
@@ -34,6 +34,6 @@ export default async function handler(req: any, res: any) {
     res.end()
   } catch (error) {
     console.error('Error in run:', error)
-    res.status(500).json({ message: 'Internal server error' })
+    res.status(500).json({ message: `Error in run: ${error}` })
   }
 }
