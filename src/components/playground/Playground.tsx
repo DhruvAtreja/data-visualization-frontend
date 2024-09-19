@@ -165,6 +165,14 @@ export default function Playground() {
 
   return (
     <div className='flex flex-col items-center justify-center min-h-screen bg-[#204544] m-0 p-0'>
+      <a
+        href='https://github.com/DhruvAtreja/datavisualization_langgraph'
+        target='_blank'
+        rel='noopener noreferrer'
+        className='absolute top-4 right-56 bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded'
+      >
+        GitHub
+      </a>
       <Logo setGraphState={setGraphState} />
       <UploadButton onFileUpload={handleFileUpload} disabled={isUploading} />
 
